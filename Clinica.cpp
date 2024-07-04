@@ -99,36 +99,55 @@ public:
         return true;
     }
 };
-class PACIENTE
-
-{
+class PACIENTE {
 private:
     string nome;
     DATA data;
     int codigo;
+    string telefone;
+    string logradouro;
+    int numero;
+    string bairro;
+    string complemento;
+    long int CEP;
+    string cidade;
+    string estado;
 
 public:
-    PACIENTE(string n, DATA date, int cod) : nome(n), data(date), codigo(cod) {}
+    // Construtor atualizado com os novos atributos
+    PACIENTE(string n, DATA date, int cod, string tel, string log, int num, string brr, string comple, long int cep, string cid, string est)
+        : nome(n), data(date), codigo(cod), telefone(tel), logradouro(log), numero(num), bairro(brr), complemento(comple), CEP(cep), cidade(cid), estado(est) {}
 
+    // Métodos get para os atributos
     string getNome() const { return nome; }
     DATA getData() const { return data; }
     int getCodigo() const { return codigo; }
-};
+    string getTelefone() const { return telefone; }
+    string getLogradouro() const { return logradouro; }
+    int getNumero() const { return numero; }
+    string getBairro() const { return bairro; }
+    string getComplemento() const { return complemento; }
+    long int getCEP() const { return CEP; }
+    string getCidade() const { return cidade; }
+    string getEstado() const { return estado; }
+    };
 
-class MEDICO
-
-{
+class MEDICO {
 private:
     string nome;
     string especialidade;
     int codigo;
+    string telefone;
 
 public:
-    MEDICO(string n, string esp, int cod) : nome(n), especialidade(esp), codigo(cod) {}
+    // Construtor atualizado com o novo atributo
+    MEDICO(string n, string esp, int cod, string tel) : nome(n), especialidade(esp), codigo(cod), telefone(tel) {}
 
+    // Métodos get para os atributos
     string getNome() const { return nome; }
-    string getespecialidade() const { return especialidade; }
+    string getEspecialidade() const { return especialidade; }
     int getCodigo() const { return codigo; }
+    string getTelefone() const { return telefone; }
 };
 
 class CONSULTA
@@ -148,6 +167,29 @@ public:
     int getHoras() const { return horas; }
     int getMinutos() const { return minutos; }
 };
+
+
+string validarTelefone() {
+    string telefone;
+    bool valido = false;
+
+    while (!valido) {
+        cout << "Digite o telefone (11 dígitos): ";
+        getline(cin, telefone);
+
+        // Remove espaços em branco extras
+        telefone.erase(remove_if(telefone.begin(), telefone.end(), ::isspace), telefone.end());
+
+        // Verifica se o telefone tem 11 dígitos numéricos
+        if (telefone.length() == 11 && all_of(telefone.begin(), telefone.end(), ::isdigit)) {
+            valido = true;
+        } else {
+            cout << "Telefone inválido. Por favor, digite novamente." << endl;
+        }
+    }
+
+    return telefone;
+}
 
 int contarConsultasPorMedico(const vector<CONSULTA> &listaConsultas, int codigoMedico, const DATA &data)
 {
@@ -336,31 +378,25 @@ vector<CONSULTA> inicializarConsulta(const string &nomeArquivo)
     return consultas;
 }
 
-void cadastraMEDICO(vector<MEDICO> &lista, string nome, string nometxt, string especialidade)
-{
+void cadastraMEDICO(vector<MEDICO> &lista, string nome, string especialidade, string telefone, string nometxt) {
     int cod = lista.size() + 1;
-    MEDICO novo(nome, especialidade, cod);
+    MEDICO novo(nome, especialidade, cod, telefone);
     lista.push_back(novo);
 
     ofstream anota(nometxt, ios::app);
-    if (!anota)
-    {
+    if (!anota) {
         cout << "Nao foi possivel cadastrar esse medico" << endl;
-    }
-    else
-    {
-        for (const auto &paci : lista)
-        {
-            anota << paci.getNome() << " - " << paci.getespecialidade() << " - " << paci.getCodigo() << endl;
-        }
-
+    } else {
+        anota << nome << " - " << especialidade << " - " << cod << " - " << telefone << endl;
         cout << "Medico Cadastrado com Sucesso" << endl
              << "Nome: " << nome << endl
              << "Especialidade: " << especialidade << endl
-             << "Codigo: " << cod << endl;
+             << "Codigo: " << cod << endl
+             << "Telefone: " << telefone << endl;
     }
     anota.close();
 }
+
 
 void descadastramedico(vector<MEDICO> &lista, string nometxt, string nome)
 {
@@ -378,19 +414,18 @@ void descadastramedico(vector<MEDICO> &lista, string nometxt, string nome)
 
     // Criar um novo arquivo com os pacientes restantes
     ofstream anota(nometxt, ios::app);
-    if (!anota)
-    {
-        cout << "Nao foi possivel criar o arquivo: " << nometxt << endl;
-    }
-    else
-    {
-        for (const auto &paci : lista)
+    if (!anota) {
+        cout << "Nao foi possivel cadastrar esse medico" << endl;
+    } else {
+          for (const auto &paci : lista)
         {
-            anota << paci.getNome() << " - " << paci.getespecialidade() << " - " << paci.getCodigo() << endl;
+            anota << paci.getNome() << " - " << paci.getEspecialidade() << " - " << paci.getCodigo() << paci.getTelefone()<<endl;
         }
     }
     anota.close();
 }
+
+      
 
 bool nomeEstaNoMedico(const vector<MEDICO> &lista, const string &nomeProcurado)
 {
@@ -411,6 +446,8 @@ void EditarMedico(vector<MEDICO> &lista, string nometxt, string nome)
 
     string newnome;
     string newespecialidade;
+    string newtelefone ;
+
     if (nomeEstaNoMedico(lista, nome))
     {
         descadastramedico(lista, nometxt, nome);
@@ -418,7 +455,8 @@ void EditarMedico(vector<MEDICO> &lista, string nometxt, string nome)
         cin >> newnome;
         cout << "Insira a nova especialidade" << endl;
         cin >> newespecialidade;
-        cadastraMEDICO(lista, newnome, nometxt, newespecialidade);
+        newtelefone = validarTelefone();
+        cadastraMEDICO(lista, newnome, nometxt, newespecialidade,newtelefone);
         cout << "Medico editado com sucesso." << endl;
     }
     else
@@ -432,94 +470,88 @@ void ListarMedicos(const vector<MEDICO> &lis)
     for (const auto &medicos : lis)
     {
         cout << "Nome: " << medicos.getNome() << endl;
-        cout << "Especialidade: " << medicos.getespecialidade() << endl;
+        cout << "Especialidade: " << medicos.getEspecialidade() << endl;
+        cout << "Telefone: " << medicos.getTelefone() << endl;
         cout << "Codigo: " << medicos.getCodigo() << endl
              << endl;
     }
 }
 
-vector<MEDICO> inicializarMedico(const string &nomeArquivo)
-{
-    vector<MEDICO> medico;
+vector<MEDICO> inicializarMedico(const string &nomeArquivo) {
+    vector<MEDICO> medicos;
     ifstream arquivo(nomeArquivo);
 
-    if (!arquivo.is_open())
-    {
+    if (!arquivo.is_open()) {
         cerr << "Erro ao abrir o arquivo: " << nomeArquivo << endl;
-        return medico; // Retorna vetor vazio se houver erro ao abrir o arquivo
+        return medicos; // Retorna vetor vazio se houver erro ao abrir o arquivo
     }
 
     string linha;
-    while (getline(arquivo, linha))
-    {
+    while (getline(arquivo, linha)) {
         stringstream ss(linha);
-        string nome, especialidade;
+        string nome, especialidade, telefone;
         int codigo;
 
-        // Extrai nome, data e código da linha
+        // Extrai nome, especialidade, código e telefone da linha
         getline(ss, nome, '-');
         getline(ss, especialidade, '-');
         ss >> codigo;
+        ss.ignore(1, '-'); // Ignora o caractere '-' após o código
+        getline(ss, telefone);
 
-        // Cria um objeto PACIENTE e adiciona ao vetor
-        medico.push_back(MEDICO(nome, especialidade, codigo));
+        // Cria um objeto MEDICO e adiciona ao vetor
+        medicos.push_back(MEDICO(nome, especialidade, codigo, telefone));
     }
 
     arquivo.close();
-    return medico;
+    return medicos;
 }
 
-void cadastraPaciente(vector<PACIENTE> &lista, string nome, DATA date, string nometxt)
-{
+
+void cadastraPaciente(vector<PACIENTE> &lista, string nome, DATA date, string telefone, string logradouro, int numero, string bairro, string complemento, long int CEP, string cidade, string estado, string nometxt) {
     int cod = lista.size() + 1;
-    PACIENTE novo(nome, date, cod);
+    PACIENTE novo(nome, date, cod, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado);
     lista.push_back(novo);
 
     ofstream anota(nometxt, ios::app);
-    if (!anota)
-    {
+    if (!anota) {
         cout << "Nao foi possivel cadastrar esse paciente" << endl;
-    }
-    else
-    {
-        for (const auto &paci : lista)
-        {
-            anota << paci.getNome() << " - " << paci.getData().toString() << " - " << paci.getCodigo() << endl;
-        }
-
+    } else {
+        anota << nome << " - " << date.toString() << " - " << cod << " - " << telefone << " - " << logradouro << " - " << numero << " - " << bairro << " - " << complemento << " - " << CEP << " - " << cidade << " - " << estado << endl;
         cout << "Paciente Cadastrado com Sucesso" << endl
              << "Nome: " << nome << endl
              << "Nascimento: " << date.getdia() << "/" << date.getmes() << "/" << date.getano() << endl
-             << "Codigo: " << cod << endl;
+             << "Codigo: " << cod << endl
+             << "Telefone: " << telefone << endl
+             << "Logradouro: " << logradouro << endl
+             << "Numero: " << numero << endl
+             << "Bairro: " << bairro << endl
+             << "Complemento: " << complemento << endl
+             << "CEP: " << CEP << endl
+             << "Cidade: " << cidade << endl
+             << "Estado: " << estado << endl;
     }
     anota.close();
 }
 
-void descadastraPaciente(vector<PACIENTE> &lista, string nometxt, string nome)
-{
+void descadastraPaciente(vector<PACIENTE> &lista, string nometxt, string nome) {
     // Remover o arquivo antigo
-    if (remove(nometxt.c_str()) != 0)
-    {
+    if (remove(nometxt.c_str()) != 0) {
         cerr << "Erro ao excluir o arquivo: " << nometxt << endl;
     }
 
     // Remover o paciente do vetor
     lista.erase(remove_if(lista.begin(), lista.end(),
-                          [nome](const PACIENTE &p)
-                          { return p.getNome() == nome; }),
+                          [nome](const PACIENTE &p) { return p.getNome() == nome; }),
                 lista.end());
 
     // Criar um novo arquivo com os pacientes restantes
     ofstream anota(nometxt, ios::app);
-    if (!anota)
-    {
+    if (!anota) {
         cout << "Nao foi possivel criar o arquivo: " << nometxt << endl;
-    }
-    else
-    {
-        for (const auto &paci : lista)
-        {
-            anota << paci.getNome() << " - " << paci.getData().toString() << " - " << paci.getCodigo() << endl;
+    } else {
+        for (const auto &paci : lista) {
+            anota << paci.getNome() << " - " << paci.getData().toString() << " - " << paci.getCodigo() << " - " << paci.getTelefone() << " - " << paci.getLogradouro() << " - " << paci.getNumero() << " - " << paci.getBairro() << " - " << paci.getComplemento() << " - " << paci.getCEP() << " - " << paci.getCidade() << " - " << paci.getEstado() << endl;
         }
     }
     anota.close();
@@ -541,22 +573,58 @@ bool nomeEstaNoVector(const vector<PACIENTE> &lista, const string &nomeProcurado
 
 void EditarPaciente(vector<PACIENTE> &lista, string nometxt, string nome)
 {
-
-    string newnome;
-    DATA newdata(0, 0, 0);
     if (nomeEstaNoVector(lista, nome))
     {
         descadastraPaciente(lista, nometxt, nome);
-        cout << "Qual nome deseja manter" << endl;
-        cin >> newnome;
-        cout << "Insira a nova data (dia mes ano)" << endl;
-        cin >> newdata;
-        cadastraPaciente(lista, newnome, newdata, nometxt);
-        cout << "Paciente editado com sucesso." << endl;
+
+        string newNome, newTelefone, newLogradouro, newBairro, newComplemento, newCidade, newEstado;
+        int newDia, newMes, newAno, newNumero;
+        long int newCEP;
+
+        cout << "Qual nome deseja manter: ";
+        cin >> newNome;
+        cout << "Insira a nova data (dia mes ano): ";
+        cin >> newDia >> newMes >> newAno;
+        DATA newData(newDia, newMes, newAno);
+
+        newTelefone  = validarTelefone();
+        cout << "Insira o novo logradouro: ";
+        cin >> newLogradouro;
+        cout << "Insira o novo número: ";
+        cin >> newNumero;
+        cout << "Insira o novo bairro: ";
+        cin >> newBairro;
+        cout << "Insira o novo complemento: ";
+        cin >> newComplemento;
+        cout << "Insira o novo CEP: ";
+        cin >> newCEP;
+        cout << "Insira a nova cidade: ";
+        cin >> newCidade;
+        cout << "Insira o novo estado: ";
+        cin >> newEstado;
+
+        int cod = lista.size() + 1; // Atualizar o código do paciente
+        PACIENTE novo(newNome, newData, cod, newTelefone, newLogradouro, newNumero, newBairro, newComplemento, newCEP, newCidade, newEstado);
+        lista.push_back(novo);
+
+        ofstream anota(nometxt, ios::app);
+        if (!anota)
+        {
+            cout << "Nao foi possivel cadastrar esse paciente" << endl;
+        }
+        else
+        {
+            anota << novo.getNome() << " - " << novo.getData().toString() << " - " << novo.getCodigo() << " - " << novo.getTelefone() << " - " << novo.getLogradouro() << " - " << novo.getNumero() << " - " << novo.getBairro() << " - " << novo.getComplemento() << " - " << novo.getCEP() << " - " << novo.getCidade() << " - " << novo.getEstado() << endl;
+            cout << "Paciente editado com sucesso." << endl;
+        }
+        anota.close();
     }
     else
+    {
         cout << "Paciente procurado nao esta cadastrado" << endl;
+    }
 }
+
 
 void ListarPacientes(const vector<PACIENTE> &lis)
 {
@@ -566,10 +634,18 @@ void ListarPacientes(const vector<PACIENTE> &lis)
     {
         cout << "Nome: " << pacientes.getNome() << endl;
         cout << "Data: " << pacientes.getData().getdia() << "/" << pacientes.getData().getmes() << "/" << pacientes.getData().getano() << endl;
-        cout << "Codigo: " << pacientes.getCodigo() << endl
-             << endl;
+        cout << "Codigo: " << pacientes.getCodigo() << endl;
+        cout << "Telefone: " << pacientes.getTelefone() << endl;
+        cout << "Logradouro: " << pacientes.getLogradouro() << " Numero: " << pacientes.getNumero() << endl;
+        cout << "Bairro: " << pacientes.getBairro() << endl;
+        cout << "Complemento: " << pacientes.getComplemento() << endl;
+        cout << "CEP: " << pacientes.getCEP() << endl;
+        cout << "Cidade: " << pacientes.getCidade() << endl;
+        cout << "Estado: " << pacientes.getEstado() << endl;
+        cout << endl;
     }
 }
+
 
 vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
 {
@@ -586,13 +662,25 @@ vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
     while (getline(arquivo, linha))
     {
         stringstream ss(linha);
-        string nome, dataStr;
-        int codigo;
+        string nome, dataStr, telefone, logradouro, bairro, complemento, cidade, estado;
+        int codigo, numero;
+        long int CEP;
 
-        // Extrai nome, data e código da linha
+        // Extrai os dados da linha
         getline(ss, nome, '-');
         getline(ss, dataStr, '-');
         ss >> codigo;
+        ss.ignore(); // Ignora o espaço após o código
+        getline(ss, telefone, '-');
+        getline(ss, logradouro, '-');
+        ss >> numero;
+        ss.ignore(); // Ignora o espaço após o número
+        getline(ss, bairro, '-');
+        getline(ss, complemento, '-');
+        ss >> CEP;
+        ss.ignore(); // Ignora o espaço após o CEP
+        getline(ss, cidade, '-');
+        getline(ss, estado, '-');
 
         // Converte a string de data para um objeto DATA
         stringstream ssData(dataStr);
@@ -602,12 +690,13 @@ vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
         DATA data(dia, mes, ano);
 
         // Cria um objeto PACIENTE e adiciona ao vetor
-        pacientes.push_back(PACIENTE(nome, data, codigo));
+        pacientes.push_back(PACIENTE(nome, data, codigo, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado));
     }
 
     arquivo.close();
     return pacientes;
 }
+
 
 void menuConsulta(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, string &ArquivoMedico, vector<MEDICO> &Listademedicos,
                   string &ArquivoConsulta, vector<CONSULTA> &ListadeConsulta)
@@ -659,6 +748,8 @@ void menuConsulta(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
             cout << "Opção inválida, por favor tente novamente." << endl;
             break;
         }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 }
 void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, string &ArquivoMedico, vector<MEDICO> &Listademedicos)
@@ -690,15 +781,51 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
         case 1:
         {
             string nome;
-            int dia, mes, ano;
-            cout << "Informe o nome do paciente: " << endl;
-            getline(cin, nome);
-            cout << "Informe a data de nascimento (dd mm aaaa): " << endl;
-            cin >> dia >> mes >> ano;
-            DATA date(dia, mes, ano);
-            cadastraPaciente(Listadepaciente, nome, date, ArquivoPaciente);
+    int dia, mes, ano;
+    cout << "Informe o nome do paciente: ";
+    cin.ignore(); // Limpa o buffer do newline pendente
+    getline(cin, nome);
 
-            break;
+    cout << "Informe a data de nascimento (dd mm aaaa): ";
+    cin >> dia >> mes >> ano;
+    DATA date(dia, mes, ano);
+
+
+    string telefone  = validarTelefone();
+    cin.ignore(); 
+
+    cout << "Informe o logradouro: ";
+    string logradouro;
+    getline(cin, logradouro);
+
+    cout << "Informe o número: ";
+    int numero;
+    cin >> numero;
+
+    cout << "Informe o bairro: ";
+    string bairro;
+    cin.ignore(); // Limpa o buffer do newline pendente
+    getline(cin, bairro);
+
+    cout << "Informe o complemento: ";
+    string complemento;
+    getline(cin, complemento);
+
+    cout << "Informe o CEP: ";
+    long int CEP;
+    cin >> CEP;
+
+    cout << "Informe a cidade: ";
+    string cidade;
+    cin.ignore(); // Limpa o buffer do newline pendente
+    getline(cin, cidade);
+
+    cout << "Informe o estado: ";
+    string estado;
+    getline(cin, estado);
+
+    cadastraPaciente(Listadepaciente, nome, date, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado, ArquivoPaciente);
+    break;
         }
         case 2:
         {
@@ -741,12 +868,13 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
         }
         case 6:
         {
-            string nome, especialidade;
+            string nome, especialidade,telefone;
             cout << "Informe o nome do medico: " << endl;
             getline(cin, nome);
             cout << "Informe a especialidade: " << endl;
             cin >> especialidade;
-            cadastraMEDICO(Listademedicos, nome, ArquivoMedico, especialidade);
+            telefone  = validarTelefone();
+            cadastraMEDICO(Listademedicos, nome, ArquivoMedico, especialidade,telefone);
 
             break;
         }
@@ -795,6 +923,9 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
             cout << "Opção inválida, por favor tente novamente." << endl;
             break;
         }
+
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 }
 
@@ -941,6 +1072,8 @@ void menuHorarios(const vector<CONSULTA> &consultas, const vector<MEDICO> &medic
             cout << "Opção inválida, por favor tente novamente." << endl;
             break;
         }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 }
 
@@ -981,6 +1114,8 @@ void menu(string &ArquivoPaciente, vector<PACIENTE> LISTADEPACIENTE, string &Arq
 
             break;
         }
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
 }
 
