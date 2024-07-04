@@ -109,13 +109,13 @@ private:
     int numero;
     string bairro;
     string complemento;
-    long int CEP;
+    string CEP;
     string cidade;
     string estado;
 
 public:
     // Construtor atualizado com os novos atributos
-    PACIENTE(string n, DATA date, int cod, string tel, string log, int num, string brr, string comple, long int cep, string cid, string est)
+    PACIENTE(string n, DATA date, int cod, string tel, string log, int num, string brr, string comple, string cep, string cid, string est)
         : nome(n), data(date), codigo(cod), telefone(tel), logradouro(log), numero(num), bairro(brr), complemento(comple), CEP(cep), cidade(cid), estado(est) {}
 
     // Métodos get para os atributos
@@ -127,7 +127,7 @@ public:
     int getNumero() const { return numero; }
     string getBairro() const { return bairro; }
     string getComplemento() const { return complemento; }
-    long int getCEP() const { return CEP; }
+    string getCEP() const { return CEP; }
     string getCidade() const { return cidade; }
     string getEstado() const { return estado; }
     };
@@ -526,7 +526,7 @@ vector<MEDICO> inicializarMedico(const string &nomeArquivo) {
 }
 
 
-void cadastraPaciente(vector<PACIENTE> &lista, string nome, DATA date, string telefone, string logradouro, int numero, string bairro, string complemento, long int CEP, string cidade, string estado, string nometxt) {
+void cadastraPaciente(vector<PACIENTE> &lista, string nome, DATA date, string telefone, string logradouro, int numero, string bairro, string complemento, string CEP, string cidade, string estado, string nometxt) {
     int cod = geraCodigo(lista);
     PACIENTE novo(nome, date, cod, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado);
     lista.push_back(novo);
@@ -588,6 +588,32 @@ bool nomeEstaNoVector(const vector<PACIENTE> &lista, const string &nomeProcurado
     }
     return false; // Não encontrou o nome no vetor
 }
+int validarNumeroCasa() {
+    string input;
+    int numero;
+    bool valido = false;
+
+    while (!valido) {
+        cout << "Digite o número da casa: ";
+        getline(cin, input);
+
+        // Verifica se a string contém apenas dígitos
+        if (input.empty() || (input.find_first_not_of("0123456789") == string::npos)) {
+            stringstream ss(input);
+            ss >> numero;
+
+            if (!ss.fail()) {
+                valido = true;
+            }
+        }
+
+        if (!valido) {
+            cout << "Número inválido. Por favor, digite novamente." << endl;
+        }
+    }
+
+    return numero;
+}
 
 void EditarPaciente(vector<PACIENTE> &lista, string nometxt, string nome)
 {
@@ -597,7 +623,7 @@ void EditarPaciente(vector<PACIENTE> &lista, string nometxt, string nome)
 
         string newNome, newTelefone, newLogradouro, newBairro, newComplemento, newCidade, newEstado;
         int newDia, newMes, newAno, newNumero;
-        long int newCEP;
+        string newCEP;
 
         cout << "Qual nome deseja manter: ";
         cin >> newNome;
@@ -609,13 +635,13 @@ void EditarPaciente(vector<PACIENTE> &lista, string nometxt, string nome)
         cout << "Insira o novo logradouro: ";
         cin >> newLogradouro;
         cout << "Insira o novo número: ";
-        cin >> newNumero;
-        cout << "Insira o novo bairro: ";
+        newNumero = validarNumeroCasa();
+        
         cin >> newBairro;
         cout << "Insira o novo complemento: ";
         cin >> newComplemento;
-        cout << "Insira o novo CEP: ";
-        cin >> newCEP;
+        
+        newCEP = validarCEP();
         cout << "Insira a nova cidade: ";
         cin >> newCidade;
         cout << "Insira o novo estado: ";
@@ -682,7 +708,7 @@ vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
         stringstream ss(linha);
         string nome, dataStr, telefone, logradouro, bairro, complemento, cidade, estado;
         int codigo, numero;
-        long int CEP;
+        string CEP;
 
         // Extrai os dados da linha
         getline(ss, nome, '-');
@@ -713,6 +739,28 @@ vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
 
     arquivo.close();
     return pacientes;
+}
+
+string validarCEP(){
+    string cep;
+    bool valido = false;
+
+    while (!valido) {
+        cout << "Digite o CEP (8 dígitos): ";
+        getline(cin, cep);
+
+        // Remove espaços em branco extras
+        cep.erase(remove_if(cep.begin(), cep.end(), ::isspace), cep.end());
+
+        // Verifica se o CEP tem 8 dígitos numéricos
+        if (cep.length() == 8 && all_of(cep.begin(), cep.end(), ::isdigit)) {
+            valido = true;
+        } else {
+            cout << "CEP inválido. Por favor, digite novamente." << endl;
+        }
+    }
+
+    return cep;
 }
 
 
@@ -816,9 +864,7 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
     cin.ignore(); // Limpa o buffer do newline pendente
     getline(cin, logradouro);
 
-    cout << "Informe o número: ";
-    int numero;
-    cin >> numero;
+    int numero = validarNumeroCasa();
 
     cout << "Informe o bairro: ";
     string bairro;
@@ -829,9 +875,8 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
     string complemento;
     getline(cin, complemento);
 
-    cout << "Informe o CEP: ";
-    long int CEP;
-    cin >> CEP;
+    
+    string CEP = validarCEP();
 
     cout << "Informe a cidade: ";
     string cidade;
