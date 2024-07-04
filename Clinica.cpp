@@ -855,10 +855,11 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
             if (nomeEstaNoVector(Listadepaciente, nome))
             {
                 cout << "Paciente " << nome << "esta cadatrado" << endl;
+                break;
             }
-            else
+            else{
                 cout << "Paciente procurado nao esta cadastrado" << endl;
-
+                break;}
             break;
         }
         case 3:
@@ -906,9 +907,11 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
             if (nomeEstaNoMedico(Listademedicos, nome))
             {
                 cout << "Medico " << nome << "esta cadatrado" << endl;
+                break;
             }
-            else
+            else{
                 cout << "Medico procurado nao esta cadastrado" << endl;
+                break;}
 
             break;
         }
