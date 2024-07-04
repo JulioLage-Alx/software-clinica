@@ -797,8 +797,8 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
         switch (escolha)
         {
         case 1:
-        {
-            string nome;
+{
+    string nome;
     int dia, mes, ano;
     cout << "Informe o nome do paciente: ";
     cin.ignore(); // Limpa o buffer do newline pendente
@@ -806,14 +806,15 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
 
     cout << "Informe a data de nascimento (dd mm aaaa): ";
     cin >> dia >> mes >> ano;
+    cin.ignore(); // Limpa o buffer do newline pendente após a leitura de ano
+
     DATA date(dia, mes, ano);
 
-
-    string telefone  = validarTelefone();
-    cin.ignore(); 
+    string telefone = validarTelefone();
 
     cout << "Informe o logradouro: ";
     string logradouro;
+    cin.ignore(); // Limpa o buffer do newline pendente
     getline(cin, logradouro);
 
     cout << "Informe o número: ";
@@ -844,7 +845,8 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
 
     cadastraPaciente(Listadepaciente, nome, date, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado, ArquivoPaciente);
     break;
-        }
+}
+
         case 2:
         {
             string nome;
