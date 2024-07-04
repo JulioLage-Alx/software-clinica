@@ -801,7 +801,6 @@ void menuCadastro(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, st
     string nome;
     int dia, mes, ano;
     cout << "Informe o nome do paciente: ";
-    cin.ignore(); // Limpa o buffer do newline pendente
     getline(cin, nome);
 
     cout << "Informe a data de nascimento (dd mm aaaa): ";
