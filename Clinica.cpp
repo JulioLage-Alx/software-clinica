@@ -190,6 +190,31 @@ string validarTelefone() {
 
     return telefone;
 }
+
+
+
+string validarCEP() {
+    string cep;
+    bool valido = false;
+
+    while (!valido) {
+        cout << "Digite o CEP (8 dígitos): ";
+        getline(cin, cep);
+
+        // Remove espaços em branco extras
+        cep.erase(remove_if(cep.begin(), cep.end(), ::isspace), cep.end());
+
+        // Verifica se o CEP tem 8 dígitos numéricos
+        if (cep.length() == 8 && all_of(cep.begin(), cep.end(), ::isdigit)) {
+            valido = true;
+        } else {
+            cout << "CEP inválido. Por favor, digite novamente." << endl;
+        }
+    }
+
+    return cep;
+}
+
 int geraCodigo(const vector<PACIENTE> &lista) {
     if (lista.empty()) {
         return 1; // Se a lista está vazia, retorna 1 como primeiro código
@@ -741,27 +766,6 @@ vector<PACIENTE> inicializarPacientes(const string &nomeArquivo)
     return pacientes;
 }
 
-string validarCEP(){
-    string cep;
-    bool valido = false;
-
-    while (!valido) {
-        cout << "Digite o CEP (8 dígitos): ";
-        getline(cin, cep);
-
-        // Remove espaços em branco extras
-        cep.erase(remove_if(cep.begin(), cep.end(), ::isspace), cep.end());
-
-        // Verifica se o CEP tem 8 dígitos numéricos
-        if (cep.length() == 8 && all_of(cep.begin(), cep.end(), ::isdigit)) {
-            valido = true;
-        } else {
-            cout << "CEP inválido. Por favor, digite novamente." << endl;
-        }
-    }
-
-    return cep;
-}
 
 
 void menuConsulta(string &ArquivoPaciente, vector<PACIENTE> &Listadepaciente, string &ArquivoMedico, vector<MEDICO> &Listademedicos,
