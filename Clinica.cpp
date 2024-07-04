@@ -190,6 +190,15 @@ string validarTelefone() {
 
     return telefone;
 }
+int geraCodigo(const vector<PACIENTE> &lista) {
+    if (lista.empty()) {
+        return 1; // Se a lista está vazia, retorna 1 como primeiro código
+    } else {
+        // Encontra o último código usado na lista de pacientes
+        int ultimoCodigo = lista.back().getCodigo();
+        return ultimoCodigo + 1; // Retorna o próximo código
+    }
+}
 
 int contarConsultasPorMedico(const vector<CONSULTA> &listaConsultas, int codigoMedico, const DATA &data)
 {
@@ -377,9 +386,18 @@ vector<CONSULTA> inicializarConsulta(const string &nomeArquivo)
     arquivo.close();
     return consultas;
 }
+int geraCodigoMedico(const vector<MEDICO> &lista) {
+    if (lista.empty()) {
+        return 1; // Se a lista está vazia, retorna 1 como primeiro código
+    } else {
+        // Encontra o último código usado na lista de médicos
+        int ultimoCodigo = lista.back().getCodigo();
+        return ultimoCodigo + 1; // Retorna o próximo código
+    }
+}
 
 void cadastraMEDICO(vector<MEDICO> &lista, string nome, string especialidade, string telefone, string nometxt) {
-    int cod = lista.size() + 1;
+    int cod = geraCodigoMedico(lista);
     MEDICO novo(nome, especialidade, cod, telefone);
     lista.push_back(novo);
 
@@ -509,7 +527,7 @@ vector<MEDICO> inicializarMedico(const string &nomeArquivo) {
 
 
 void cadastraPaciente(vector<PACIENTE> &lista, string nome, DATA date, string telefone, string logradouro, int numero, string bairro, string complemento, long int CEP, string cidade, string estado, string nometxt) {
-    int cod = lista.size() + 1;
+    int cod = geraCodigo(lista);
     PACIENTE novo(nome, date, cod, telefone, logradouro, numero, bairro, complemento, CEP, cidade, estado);
     lista.push_back(novo);
 
